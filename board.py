@@ -1,3 +1,7 @@
+import sqlite3, datetime
+con = sqlite3.connect('C:/sqlite/tictactoe.db')
+cur = con.cursor()
+cur.execute('CREATE TABLE IF NOT EXISTS History (winner TEXT, Time TIMESTAMP PRIMARY KEY, Board TEXT);')
 board = [
     ['-','-','-'],
     ['-','-','-'],
@@ -68,6 +72,15 @@ def checkWin():
         else:
             print("Player 2 won")
             print("Player 1 lost")
+        new = "|"
+        for i in range(0, len(board)):
+            for j in range(0, len(board)):
+                new += board[i][j]
+            new += "|"
+        cur.execute(f"INSERT INTO History VALUES('Player {str(player)}', '{datetime.datetime.now()}', '{new}') ")
+        con.commit()
+        for row in cur.execute('SELECT * FROM History'):
+            print(row)
     elif(not("-" in "".join(newBoard))):
         print("Draw")
     else:
